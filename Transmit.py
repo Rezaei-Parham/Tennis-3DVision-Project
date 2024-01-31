@@ -6,10 +6,11 @@ from PIL import Image, ImageDraw
 from threading import Thread
 
 class VideoStream:
-    def __init__(self, src=0, partial=False):
+    def __init__(self, partial=True):
         self.output_width = None
         self.output_height = None
         self.fixedBack = None
+        self.partial = partial
 
 
     def read_video(self,path_video, skip_frames=1):
@@ -38,12 +39,29 @@ class VideoStream:
         return frames
     
     def image_frame(self,image_path):
+        """ Read image file
+        :params
+            image_path: path to image file
+        :return
+            fixedBack: stiff background
+        """
         self.fixedBack = cv2.imread(image_path)
     
     def retireve_stiff_background(self):
+        """ Retrieve stiff background
+        :return
+            fixedBack: stiff background
+        """
         return np.array([self.fixedBack for _ in range(len(self.frames))])
 
     def draw_ball(self, frames, ballpoints):
+        """ Draw ball on the frames
+        :params
+            frames: list of video frames
+            ballpoints: list of ball points
+        :return
+            outframes: list of frames with ball drawn on them
+        """
         outframes = [frames[0],frames[1]]
         for i in range(2,len(frames)):
             PIL_image = cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB)
@@ -63,8 +81,8 @@ class VideoStream:
         return outframes
 
     def draw_people(self, frames,balladded, peoplepoints):
-        outframes = [frames[0],frames[1]]
-        # peoplepoints each
+        """ 
+        """
         newFrames = []
         for i in range(len(frames)):
             img = balladded[i]
