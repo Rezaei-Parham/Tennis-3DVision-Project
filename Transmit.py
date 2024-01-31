@@ -47,23 +47,6 @@ class VideoStream:
     
     def retireve_stiff_background(self):
         return np.array([self.fixedBack for _ in range(len(self.frames))])
-    
-
-    def preset_output_video(self,f1,f2,name='output.mp4'):
-        """ Preset output video
-        :params
-            f1: first frame of the video
-            f2: second frame of the video
-        :return
-            output_video: video object to write frames to the output video file. 
-        """
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        output_video = cv2.VideoWriter(name,fourcc, 30.0, (self.output_width,self.output_height))
-      
-        output_video.write(f1)
-        output_video.write(f2)
-        return output_video
-
 
     
     def draw_ball(self, frames, ballpoints, name='output.mp4'):
@@ -95,3 +78,18 @@ class VideoStream:
             img[box[0][0]:box[0][1],box[1][0]:box[1][1]] = frames[i][box[0][0]:box[0][1],box[1][0]:box[1][1]]
             newFrames.append(img)
         return newFrames
+    
+    def output_video(self,final_frames,name='output.mp4'):
+        """ Preset output video
+        :params
+            f1: first frame of the video
+            f2: second frame of the video
+        :return
+            output_video: video object to write frames to the output video file. 
+        """
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        output_video = cv2.VideoWriter(name,fourcc, 30.0, (self.output_width,self.output_height))
+
+        for f in final_frames:
+            output_video.write(f)
+        return output_video
