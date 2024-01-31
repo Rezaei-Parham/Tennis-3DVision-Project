@@ -9,9 +9,7 @@ class VideoStream:
     def __init__(self, src=0, partial=False):
         self.output_width = None
         self.output_height = None
-        self.frames = None
         self.fixedBack = None
-        self.out_video = None
 
 
     def read_video(self,path_video, skip_frames=1):
@@ -24,7 +22,6 @@ class VideoStream:
             fps: frames per second
         """
         cap = cv2.VideoCapture(path_video)
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
         self.output_width =  int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.output_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         frames = []
@@ -40,13 +37,13 @@ class VideoStream:
         cap.release()
         return frames
     
-    def image_frame(self,frames,image_path):
+    def image_frame(self,image_path):
         self.fixedBack = cv2.imread(image_path)
     
     def retireve_stiff_background(self):
         return np.array([self.fixedBack for _ in range(len(self.frames))])
 
-    def draw_ball(self, frames, ballpoints, name='output.mp4'):
+    def draw_ball(self, frames, ballpoints):
         outframes = [frames[0],frames[1]]
         for i in range(2,len(frames)):
             PIL_image = cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB)
@@ -65,7 +62,7 @@ class VideoStream:
 
         return outframes
 
-    def draw_people(self, frames,balladded, peoplepoints, name='output.mp4'):
+    def draw_people(self, frames,balladded, peoplepoints):
         outframes = [frames[0],frames[1]]
         # peoplepoints each
         newFrames = []
@@ -89,4 +86,15 @@ class VideoStream:
 
         for f in final_frames:
             output_video.write(f)
-        return output_video
+        output_video.release()
+    
+    def transmit(self,path_video,image_path,balls,people,name='output.mp4'):
+        frames = self.read_video(path_video)
+        self.image_frame(image_path)
+        frames_with_ball = self.draw_ball(frames, balls)
+        frames_with_people = self.draw_people(frames, frames_with_ball, people)
+        self.output_video(frames_with_people,name)
+        del self.fixedBack
+        del frames
+        del frames_with_ball
+        del frames_with_people
