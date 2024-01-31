@@ -87,5 +87,4 @@ class VideoStream:
 
     def draw_people(self, frames,balladded, peoplepoints, name='output.mp4'):
         outframes = [frames[0],frames[1]]
-        # peoplepoints each 
-        
+        # peoplepoints each
