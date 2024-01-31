@@ -88,3 +88,10 @@ class VideoStream:
     def draw_people(self, frames,balladded, peoplepoints, name='output.mp4'):
         outframes = [frames[0],frames[1]]
         # peoplepoints each
+        newFrames = []
+        for i in range(len(frames)):
+            img = balladded[i]
+            box = peoplepoints[i]
+            img[box[0][0]:box[0][1],box[1][0]:box[1][1]] = frames[i][box[0][0]:box[0][1],box[1][0]:box[1][1]]
+            newFrames.append(img)
+        return newFrames
