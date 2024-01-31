@@ -250,8 +250,8 @@ class BallDetector:
     
 
 
-bd = BallDetector(path_weights='weights/model.3')
-frames, fps = bd.read_video('test.mp4')
-ballpoints = bd.find_ball_points(frames)
-ballpoints = bd.postprocess_points(ballpoints)
-bd.draw_trajectory_pride(frames, ballpoints, 'test1output.mp4')
+# bd = BallDetector(path_weights='weights/model.3')
+# frames, fps = bd.read_video('test.mp4')
+# ballpoints = bd.find_ball_points(frames)
+# ballpoints = bd.postprocess_points(ballpoints)
+# bd.draw_trajectory_pride(frames, ballpoints, 'test1output.mp4')
