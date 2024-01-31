@@ -6,9 +6,9 @@ from PIL import Image, ImageDraw
 from threading import Thread
 
 class VideoStream:
-    def __init__(self, src=0, width=640, height=480, partial=False):
-        self.output_width = width
-        self.output_height = height
+    def __init__(self, src=0, partial=False):
+        self.output_width = None
+        self.output_height = None
         self.frames = None
         self.fixedBack = None
         self.out_video = None
@@ -38,17 +38,14 @@ class VideoStream:
                 break
             frame_count +=1
         cap.release()
-        return frames, fps
-    
+        return frames
     
     def image_frame(self,frames,image_path):
         self.fixedBack = cv2.imread(image_path)
     
-    
     def retireve_stiff_background(self):
         return np.array([self.fixedBack for _ in range(len(self.frames))])
 
-    
     def draw_ball(self, frames, ballpoints, name='output.mp4'):
         outframes = [frames[0],frames[1]]
         for i in range(2,len(frames)):
