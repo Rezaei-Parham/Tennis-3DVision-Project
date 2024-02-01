@@ -20,6 +20,7 @@ class MultiView:
         """
         self.view1points = view1
         self.view2points = view2
+        self.calculate_fundamental_matrix()
 
     def update_correspondences(self, view1, view2):
         """ Update correspondences
@@ -31,6 +32,7 @@ class MultiView:
         else:
             self.view1points.append(view1)
             self.view2points.append(view2)
+        self.calculate_fundamental_matrix()
 
     def print_correspondences(self):
         """ Get correspondences
@@ -81,3 +83,14 @@ class MultiView:
             x1, y1 = map(int, [c, -(r[2] + r[0] * c) / r[1]])
             img2 = cv2.line(img2, (x0, y0), (x1, y1), color, 1)
         return img2
+    
+    def get_epipolar_line(self,point1):
+        """get the epipolar line
+        :params
+            point1: point in image1
+        :return
+            line: the epipolar line"""
+        return cv2.computeCorrespondEpilines(point1.reshape(-1, 1, 2),1,self.F).reshape(-1,3)
+    
+    
+        
