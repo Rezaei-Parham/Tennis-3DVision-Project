@@ -86,8 +86,12 @@ class VideoStream:
         newFrames = []
         for i in range(len(frames)):
             img = balladded[i]
-            box = peoplepoints[i]
-            img[box[0][0]:box[0][1],box[1][0]:box[1][1]] = frames[i][box[0][0]:box[0][1],box[1][0]:box[1][1]]
+            if i == 0:
+                newFrames.append(img)
+                continue
+            for box in peoplepoints[i]:
+                box = peoplepoints[i]
+                img[box[0]:box[0]+box[2],box[1]:box[1]+box[3]] = frames[i][box[0]:box[0]+box[2],box[1]:box[1]+box[3]]
             newFrames.append(img)
         return newFrames
     
