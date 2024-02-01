@@ -46,6 +46,7 @@ class VideoStream:
             fixedBack: stiff background
         """
         self.fixedBack = cv2.imread(image_path)
+        self.fixedBack = cv2.resize(self.fixedBack, ( self.output_width, self.output_height ))
     
     def retireve_stiff_background(self):
         """ Retrieve stiff background
