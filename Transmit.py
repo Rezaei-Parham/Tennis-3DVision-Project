@@ -107,6 +107,7 @@ class VideoStream:
         output_video.release()
     
     def transmit(self,path_video,image_path,balls,people,name='output.mp4'):
+
         frames = self.read_video(path_video)
         self.image_frame(image_path)
         frames_with_ball = self.draw_ball(frames, balls)
