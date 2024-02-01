@@ -92,5 +92,38 @@ class MultiView:
             line: the epipolar line"""
         return cv2.computeCorrespondEpilines(point1.reshape(-1, 1, 2),1,self.F).reshape(-1,3)
     
+
+    def line_from_points(self,p1, p2):
+        """ Calculate line coefficients A, B, C from two points (x1, y1) and (x2, y2) """
+        A = p2[1] - p1[1]
+        B = p1[0] - p2[0]
+        C = p2[0]*p1[1] - p1[0]*p2[1]
+        return A, B, -C
+
+    def intersection(self,line1, line2):
+        """ Find intersection of two lines given by coefficients A, B, C """
+        A1, B1, C1 = line1
+        A2, B2, C2 = line2
+
+        determinant = A1*B2 - A2*B1
+        if determinant == 0:
+            return None  # Lines are parallel
+
+        x = (C1*B2 - C2*B1) / determinant
+        y = (A1*C2 - A2*C1) / determinant
+        return x, y
     
+    def estimate_ball_position(self, lastBall, preLastBall, view2Ball):
+        """ Estimate ball position in new frame
+        :params
+            lastBall: last ball position
+            preLastBall: pre-last ball position
+            view2Ball: ball position in view2
+        :return
+            intersection: intersection of epipolar line and line from lastBall and preLastBall
+        """
+        epipolarLine = self.get_epipolar_line(view2Ball)
+        points_line = self.line_from_points(preLastBall, lastBall)
+        intersection = self.intersection(points_line, epipolarLine.ravel())
+        return intersection
         
