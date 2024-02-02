@@ -105,7 +105,7 @@ def get_player_boxes(frames):
             if success and is_near(tracker_bboxes, bboxes):
                 for bbox in tracker_bboxes:
                     drawBox(frame,bbox)
-                    player_boxes.append(box)
+                    player_boxes.append(bbox)
             else:
                 trackers = initialize_trackers(frame, bboxes)
                 for box in bboxes:
