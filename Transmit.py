@@ -12,7 +12,7 @@ class VideoStream:
         self.fixedBack = None
         self.partial = partial
         self.lenFrames = 0
-        self.Frames = []
+        self.frames = []
 
 
     def read_video(self,path_video, skip_frames=1):
