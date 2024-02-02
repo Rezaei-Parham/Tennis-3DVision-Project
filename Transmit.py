@@ -11,6 +11,7 @@ class VideoStream:
         self.output_height = None
         self.fixedBack = None
         self.partial = partial
+        self.lenFrames = 0
 
 
     def read_video(self,path_video, skip_frames=1):
@@ -36,6 +37,7 @@ class VideoStream:
                 break
             frame_count +=1
         cap.release()
+        self.lenFrames = len(frames)
         return frames
     
     def image_frame(self,image_path):
@@ -53,7 +55,7 @@ class VideoStream:
         :return
             fixedBack: stiff background
         """
-        return np.array([self.fixedBack for _ in range(len(self.frames))])
+        return np.array([self.fixedBack for _ in range(self.lenFrames)])
 
     def draw_ball(self, frames, ballpoints):
         """ Draw ball on the frames
@@ -90,9 +92,9 @@ class VideoStream:
             if i == 0:
                 newFrames.append(img)
                 continue
-            for box in peoplepoints[i]:
-                box = peoplepoints[i]
-                img[box[0]:box[0]+box[2],box[1]:box[1]+box[3]] = frames[i][box[0]:box[0]+box[2],box[1]:box[1]+box[3]]
+            for box in peoplepoints[i-1]:
+                # print(box)
+                img[int(box[0]):int(box[0]+box[2]),int(box[1]):int(box[1]+box[3])] = frames[i][int(box[0]):int(box[0]+box[2]),int(box[1]):int(box[1]+box[3])]
             newFrames.append(img)
         return newFrames
     
@@ -112,13 +114,12 @@ class VideoStream:
         output_video.release()
     
     def transmit(self,path_video,image_path,balls,people,name='output.mp4'):
-
-        frames = self.read_video(path_video)
         self.image_frame(image_path)
+        frames = self.retireve_stiff_background()
         frames_with_ball = self.draw_ball(frames, balls)
         frames_with_people = self.draw_people(frames, frames_with_ball, people)
         self.output_video(frames_with_people,name)
-        del self.fixedBack
+        # del self.fixedBack
         del frames
         del frames_with_ball
         del frames_with_people
