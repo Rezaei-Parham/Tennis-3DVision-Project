@@ -59,7 +59,7 @@ class VideoStream:
         """
         return np.array([self.fixedBack for _ in range(self.lenFrames)])
 
-    def draw_ball(self, frames, ballpoints):
+    def draw_ball(self, frames, ballpoints, realFrames):
         """ Draw ball on the frames
         :params
             frames: list of video frames
@@ -69,37 +69,32 @@ class VideoStream:
         """
         outframes = [frames[0],frames[1]]
         for i in range(2,len(frames)):
-            PIL_image = cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB)
-            PIL_image = Image.fromarray(PIL_image)
-
+            newframe = frames[i]
             
             if ballpoints[i][0] is not None:
-                draw_x, draw_y = ballpoints[i][0],ballpoints[i][1]
-                bbox = (draw_x - 6, draw_y - 6, draw_x + 6, draw_y + 6)
-                draw = ImageDraw.Draw(PIL_image)
-                draw.ellipse(bbox, outline='red', fill='red')
-                del draw
+                l,u,r,d = self.get_big_box(ballpoints[i][0],ballpoints[i][1],5,5,8)
+                newframe[u:d,l:r] = realFrames[i][u:d,l:r]
 
-            opencvImage = cv2.cvtColor(np.array(PIL_image), cv2.COLOR_RGB2BGR)
-            outframes.append(opencvImage)
+            
+            outframes.append(newframe)
 
         return outframes
     
-    def get_big_box(self,x,y,h,w):
+    def get_big_box(self,x,y,h,w,pad=30):
         x = int(x)
         y = int(y)
         h = int(h)
         w = int(w)
-        left = x - 10
+        left = x - pad
         if left < 0:
             left = 0
-        right = x + w + 10
+        right = x + h + pad
         if right > self.output_width:
             right = self.output_width
-        up = y - 10
+        up = y - pad
         if up < 0:
             up = 0
-        down = y + h + 10
+        down = y + w + pad
         if down > self.output_height:
             down = self.output_height
         return left,up,right,down
@@ -115,7 +110,7 @@ class VideoStream:
                 continue
             for box in peoplepoints[i-1]:
                 l,u,r,d = self.get_big_box(box[0],box[1],box[2],box[3])
-                img[l:r,u:d] = frames[i][l:r,u:d]
+                img[u:d,l:r] = frames[i][u:d,l:r]
             newFrames.append(img)
         return newFrames
     
@@ -137,7 +132,7 @@ class VideoStream:
     def transmit(self,image_path,balls,people,name='output.mp4'):
         self.image_frame(image_path)
         frames = self.retireve_stiff_background()
-        frames_with_ball = self.draw_ball(frames, balls)
+        frames_with_ball = self.draw_ball(frames, balls,self.frames)
         frames_with_people = self.draw_people(self.frames, frames_with_ball, people)
         self.output_video(frames_with_people,name)
         # del self.fixedBack
