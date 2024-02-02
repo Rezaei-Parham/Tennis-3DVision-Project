@@ -389,10 +389,16 @@ class TennisCourt:
 
         return image
 
-def detect_points(image, return_matrix):
+def detect_points(image, return_matrix=False):
     tennis_court = TennisCourt(image.shape, return_matrix)
     return tennis_court.detect_court(image)
 
 # Example:
 # image = cv2.imread("tennis15.jpeg")
 # print(detect_points(image, True))
+
+def detect_points_from_frames(frames):
+    points = []
+    for i in range(len(frames)):
+        points.append(detect_points(frames[i]))
+    return points

@@ -192,15 +192,26 @@ class VideoStream:
             outframes.append(opencvImage)
         return outframes
     
-    def cute_detail_court(self,coutPoints, playerBallFrames):
-        #TODO
-        pass
+    def cute_detail_court(self,courtPoints, playerBallFrames):
+        fr = []
+        for i in range(len(playerBallFrames)):
+            im = playerBallFrames[i]
+            court_points, net_points = courtPoints[i]
+            for point in court_points:
+               cv2.circle(im, (point[1],point[0]), 5, (0, 255, 0), -1)  # Green points for court
+
+            for point in net_points:
+                cv2.circle(im, (point[1],point[0]), 5, (0, 0, 255), -1)  # Red points for net
+
+            fr.append(im)
+        
+        return fr
     
     def show_details_on_frame(self,balls,players,court=None,name='outputComplete.mp4'):
         bf = self.cute_detail_ball(balls)
         pbf = self.cute_detail_player(players, bf)
-        # TODO: Add court here
-        self.output_video(pbf, name)
+        cpbf = self.cute_detail_court(court, pbf)
+        self.output_video(cpbf, name)
 
     def delete_redundancy(self):
         del self.frames
