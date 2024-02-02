@@ -184,7 +184,7 @@ class VideoStream:
 
             for player in players[i-2]:
                 draw_x, draw_y, draw_w, draw_h = player
-                draw.rectangle((draw_x, draw_y, draw_x + draw_w, draw_y + draw_h), outline='red', fill='red')
+                draw.rectangle((draw_x, draw_y, draw_x + draw_w, draw_y + draw_h), outline='red')
 
             del draw
 
