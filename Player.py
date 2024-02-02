@@ -39,7 +39,8 @@ def draw_connected_components(img):
     # Draw rectangles around connected components
     for i in range(1, len(stats)):
         x, y, w, h, _ = stats[i]
-        bboxes.append((x, y, w, h))
+        if w * h < 8000:
+            bboxes.append((x, y, w, h))
 
     bboxes = sorted(bboxes, key = lambda x:-x[2]*x[3])
     while True:
@@ -52,7 +53,13 @@ def draw_connected_components(img):
             del bboxes[1]
         else:
             break
-    return bboxes[:2]
+    final_bboxes = []
+    for x, y, w, h in bboxes[:2]:
+        w = max(w, 25)
+        h = max(h, 40)
+        final_bboxes.append((x, y, w, h))
+    return final_bboxes
+
 
 
 def initialize_trackers(frame, bboxes):
