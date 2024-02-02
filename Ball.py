@@ -167,7 +167,7 @@ class BallDetector:
         # Define a queue to keep track of the last 8 points
         points_queue = queue.deque(maxlen=8)
 
-        for i in range(len(frames)):
+        for i in range(2,len(frames)):
             PIL_image = cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB)
             PIL_image = Image.fromarray(PIL_image)
             draw = ImageDraw.Draw(PIL_image)

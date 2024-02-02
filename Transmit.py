@@ -140,5 +140,67 @@ class VideoStream:
         del frames_with_ball
         del frames_with_people
 
+    
+    def cute_detail_ball(self,ballpoints):
+        frames = self.frames
+        points_queue = queue.deque(maxlen=8)
+        outframes = [frames[0],frames[1]]
+        for i in range(2,len(frames)):
+            PIL_image = cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB)
+            PIL_image = Image.fromarray(PIL_image)
+            draw = ImageDraw.Draw(PIL_image)
+
+            # Update the queue with the current point
+            points_queue.appendleft(ballpoints[i])
+
+            # Define a list of colors for the 8 points
+            colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'black']
+
+            # Iterate over the points in the queue
+            for j, point in enumerate(points_queue):
+                if point[0] is not None:
+                    draw_x, draw_y = point
+                    # Adjust the size of the point based on its position in the queue
+                    size_factor = 6 - j  # Size decreases for older points in the queue
+                    size_factor = max(1, size_factor)  # Ensure size is at least 1
+                    bbox = (draw_x - size_factor, draw_y - size_factor, draw_x + size_factor, draw_y + size_factor)
+                    # Use the j-th color from the colors list
+                    draw.ellipse(bbox, outline=colors[j], fill=colors[j])
+
+            del draw
+
+            opencvImage = cv2.cvtColor(np.array(PIL_image), cv2.COLOR_RGB2BGR)
+            outframes.append(opencvImage)
+        return outframes
+
+
+    def cute_detail_player(self, players, ballFrames):
+        frames = ballFrames
+        outframes = []
+        for i in range(2, len(frames)):
+            PIL_image = cv2.cvtColor(frames[i], cv2.COLOR_BGR2RGB)
+            PIL_image = Image.fromarray(PIL_image)
+            draw = ImageDraw.Draw(PIL_image)
+
+            for player in players[i-2]:
+                draw_x, draw_y, draw_w, draw_h = player
+                draw.rectangle((draw_x, draw_y, draw_x + draw_w, draw_y + draw_h), outline='red', fill='red')
+
+            del draw
+
+            opencvImage = cv2.cvtColor(np.array(PIL_image), cv2.COLOR_RGB2BGR)
+            outframes.append(opencvImage)
+        return outframes
+    
+    def cute_detail_court(self,coutPoints, playerBallFrames):
+        #TODO
+        pass
+    
+    def show_details_on_frame(self,balls,players,court=None,name='outputComplete.mp4'):
+        bf = self.cute_detail_ball(balls)
+        pbf = self.cute_detail_player(players, bf)
+        # TODO: Add court here
+        self.output_video(pbf, name)
+
     def delete_redundancy(self):
         del self.frames
