@@ -12,6 +12,7 @@ class VideoStream:
         self.fixedBack = None
         self.partial = partial
         self.lenFrames = 0
+        self.Frames = []
 
 
     def read_video(self,path_video, skip_frames=1):
@@ -38,6 +39,7 @@ class VideoStream:
             frame_count +=1
         cap.release()
         self.lenFrames = len(frames)
+        self.frames = frames
         return frames
     
     def image_frame(self,image_path):
@@ -82,6 +84,25 @@ class VideoStream:
             outframes.append(opencvImage)
 
         return outframes
+    
+    def get_big_box(self,x,y,h,w):
+        x = int(x)
+        y = int(y)
+        h = int(h)
+        w = int(w)
+        left = x - 10
+        if left < 0:
+            left = 0
+        right = x + w + 10
+        if right > self.output_width:
+            right = self.output_width
+        up = y - 10
+        if up < 0:
+            up = 0
+        down = y + h + 10
+        if down > self.output_height:
+            down = self.output_height
+        return left,up,right,down
 
     def draw_people(self, frames,balladded, peoplepoints):
         """ 
@@ -93,8 +114,8 @@ class VideoStream:
                 newFrames.append(img)
                 continue
             for box in peoplepoints[i-1]:
-                # print(box)
-                img[int(box[0]):int(box[0]+box[2]),int(box[1]):int(box[1]+box[3])] = frames[i][int(box[0]):int(box[0]+box[2]),int(box[1]):int(box[1]+box[3])]
+                l,u,r,d = self.get_big_box(box[0],box[1],box[2],box[3])
+                img[l:r,u:d] = frames[i][l:r,u:d]
             newFrames.append(img)
         return newFrames
     
@@ -113,13 +134,16 @@ class VideoStream:
             output_video.write(f)
         output_video.release()
     
-    def transmit(self,path_video,image_path,balls,people,name='output.mp4'):
+    def transmit(self,image_path,balls,people,name='output.mp4'):
         self.image_frame(image_path)
         frames = self.retireve_stiff_background()
         frames_with_ball = self.draw_ball(frames, balls)
-        frames_with_people = self.draw_people(frames, frames_with_ball, people)
+        frames_with_people = self.draw_people(self.frames, frames_with_ball, people)
         self.output_video(frames_with_people,name)
         # del self.fixedBack
         del frames
         del frames_with_ball
         del frames_with_people
+
+    def delete_redundancy(self):
+        del self.frames
