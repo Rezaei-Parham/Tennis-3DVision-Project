@@ -59,7 +59,7 @@ class VideoStream:
         """
         return np.array([self.fixedBack for _ in range(self.lenFrames)])
 
-    def draw_ball(self, frames, ballpoints, realFrames):
+    def draw_ball(self, frames, ballpoints, realFrames,printSize):
         """ Draw ball on the frames
         :params
             frames: list of video frames
@@ -68,17 +68,19 @@ class VideoStream:
             outframes: list of frames with ball drawn on them
         """
         outframes = [frames[0],frames[1]]
+        size = 0
         for i in range(2,len(frames)):
             newframe = frames[i]
             
             if ballpoints[i][0] is not None:
                 l,u,r,d = self.get_big_box(ballpoints[i][0],ballpoints[i][1],5,5,8)
                 newframe[u:d,l:r] = realFrames[i][u:d,l:r]
+                size += (r-l)*(d-u)
 
             
             outframes.append(newframe)
 
-        return outframes
+        return outframes,size
     
     def get_big_box(self,x,y,h,w,pad=30):
         x = int(x)
@@ -99,10 +101,11 @@ class VideoStream:
             down = self.output_height
         return left,up,right,down
 
-    def draw_people(self, frames,balladded, peoplepoints):
+    def draw_people(self, frames,balladded, peoplepoints, printSize):
         """ 
         """
         newFrames = []
+        size=0
         for i in range(len(frames)):
             img = balladded[i]
             if i == 0:
@@ -111,8 +114,9 @@ class VideoStream:
             for box in peoplepoints[i-1]:
                 l,u,r,d = self.get_big_box(box[0],box[1],box[2],box[3])
                 img[u:d,l:r] = frames[i][u:d,l:r]
+                size += (r-l)*(d-u)
             newFrames.append(img)
-        return newFrames
+        return newFrames, size
     
     def output_video(self,final_frames,name='output.mp4'):
         """ Preset output video
@@ -129,11 +133,12 @@ class VideoStream:
             output_video.write(f)
         output_video.release()
     
-    def transmit(self,image_path,balls,people,name='output.mp4'):
+    def transmit(self,image_path,balls,people,name='output.mp4',printSize=False):
         self.image_frame(image_path)
         frames = self.retireve_stiff_background()
-        frames_with_ball = self.draw_ball(frames, balls,self.frames)
-        frames_with_people = self.draw_people(self.frames, frames_with_ball, people)
+        frames_with_ball,s1 = self.draw_ball(frames, balls,self.frames,printSize)
+        frames_with_people,s2 = self.draw_people(self.frames, frames_with_ball, people,printSize)
+        print(s1+s2)
         self.output_video(frames_with_people,name)
         # del self.fixedBack
         del frames

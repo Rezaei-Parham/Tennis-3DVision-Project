@@ -10,7 +10,7 @@ class MultiView:
     def __init__(self):
         self.view1points = []
         self.view2points = []
-        self.F= None
+        self.F = None
 
 
     def set_initial_correspondences(self,view1,view2):
@@ -126,4 +126,16 @@ class MultiView:
         points_line = self.line_from_points(preLastBall, lastBall)
         intersection = self.intersection(points_line, epipolarLine.ravel())
         return intersection
+    
+    def estimate_from_two_epipolars(self, view1line, view2line):
+        """ Estimate ball position in new frame
+        :params
+            view1line: epipolar line in view1
+            view2line: epipolar line in view2
+        :return
+            intersection: intersection of epipolar line and line from lastBall and preLastBall
+        """
+        intersection = self.intersection(view1line.ravel(), view2line.ravel())
+        return intersection
+
         

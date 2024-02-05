@@ -133,7 +133,7 @@ def TrackNet( n_classes ,  input_height, input_width ): # input_height = 360, in
 	model.outputHeight = OutputHeight
 
 	#show model's details
-	model.summary()
+	# model.summary()
 
 	return model
 
