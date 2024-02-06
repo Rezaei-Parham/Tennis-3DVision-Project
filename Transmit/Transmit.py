@@ -118,6 +118,8 @@ class VideoStream:
             newFrames.append(img)
         return newFrames, size
     
+    
+    
     def output_video(self,final_frames,name='output.mp4'):
         """ Preset output video
         :params
@@ -126,20 +128,24 @@ class VideoStream:
         :return
             output_video: video object to write frames to the output video file. 
         """
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        fourcc = cv2.VideoWriter_fourcc(*'MP4V')
         output_video = cv2.VideoWriter(name,fourcc, 30.0, (self.output_width,self.output_height))
 
         for f in final_frames:
             output_video.write(f)
         output_video.release()
     
-    def transmit(self,image_path,balls,people,name='output.mp4',printSize=False):
+    def transmit(self,image_path,balls,people,name='output.mp4',printSize=False,original_video=False):
         self.image_frame(image_path)
         frames = self.retireve_stiff_background()
         frames_with_ball,s1 = self.draw_ball(frames, balls,self.frames,printSize)
         frames_with_people,s2 = self.draw_people(self.frames, frames_with_ball, people,printSize)
-        print(s1+s2)
-        self.output_video(frames_with_people,name)
+        if printSize:
+            print(s1+s2)
+        if original_video:
+            self.output_video(self.frames, name)
+        else:
+            self.output_video(frames_with_people,name)
         # del self.fixedBack
         del frames
         del frames_with_ball
