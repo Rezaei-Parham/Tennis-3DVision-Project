@@ -1,5 +1,5 @@
 import argparse
-import Models
+import Ball.Models as Models
 import queue
 import cv2
 import numpy as np
