@@ -68,7 +68,7 @@ class MultiView:
             raise ValueError("Fundamental matrix is not 3x3, use more points")
         self.F = F
         
-    def draw_epipolar_line(self,point1,img2):
+    def draw_epipolar_line(self,point1,img2,col=None):
         """draw epipolar line of point1 in img2
         :params
             point1: point in img1
@@ -79,6 +79,11 @@ class MultiView:
         r, c, _ = img2.shape
         for r in lines:
             color = tuple(np.random.randint(0, 255, 3).tolist())
+            if col is not None:
+                if col == 0:
+                    color = tuple([245,0,0])
+                elif col == 1:
+                    color = tuple([230,230,230])
             x0, y0 = map(int, [0, -r[2] / r[1]])
             x1, y1 = map(int, [c, -(r[2] + r[0] * c) / r[1]])
             img2 = cv2.line(img2, (x0, y0), (x1, y1), color, 1)
