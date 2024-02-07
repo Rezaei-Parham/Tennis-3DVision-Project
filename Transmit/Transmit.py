@@ -173,7 +173,7 @@ class VideoStream:
                     draw_x, draw_y = point
                     # Adjust the size of the point based on its position in the queue
                     size_factor = 6 - j  # Size decreases for older points in the queue
-                    size_factor = max(1, size_factor)  # Ensure size is at least 1
+                    size_factor = max(1, size_factor/2)  # Ensure size is at least 1
                     bbox = (draw_x - size_factor, draw_y - size_factor, draw_x + size_factor, draw_y + size_factor)
                     # Use the j-th color from the colors list
                     draw.ellipse(bbox, outline=colors[j], fill=colors[j])
